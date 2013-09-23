@@ -4,16 +4,16 @@ import csv
 
 import cv2
 
-cv2.namedWindow('MyWindow')
+cv2.namedWindow('window')
 slc = {'x':-1,'y':-1,'w':0,'h':0}
 drawing_slc = False
-img = 0
+frame = 0
 chng = 0
 takh = 0
 data_row = []
 
 def onMouse(event, x, y, flags, param):
-    global img, rect, drawing_slc, takh, slc, chng
+    global frame, rect, drawing_slc, takh, slc, chng
 
     if event == cv2.EVENT_MOUSEMOVE:
         if drawing_slc:
@@ -36,21 +36,10 @@ def onMouse(event, x, y, flags, param):
             slc['h'] *= -1
 
         if chng == 0:
-            cv2.rectangle(img, (slc['x'],slc['y']), (slc['x']+slc['w'],slc['y']+slc['h']), (0,0,255), 1)
-            takh = raw_input('Please Enter Driving offenses[if 0 skipped]: ')
-            a = takh  
-            try:
-                takh = int(takh)
-                if takh == 0:
-                    cv2.rectangle(img, (slc['x'],slc['y']), (slc['x']+slc['w'],slc['y']+slc['h']), (255,255,255), 2)
-                else:
-                    chng = 1
-                    print 'changed'
-            except:
-                takh = a
-        elif chng == 2:
-            cv2.rectangle(img, (slc['x'],slc['y']), (slc['x']+slc['w'],slc['y']+slc['h']), (255,0,0), 1)
-            chng = 3
+            cv2.rectangle(frame, (slc['x'],slc['y']), (slc['x']+slc['w'],slc['y']+slc['h']), (0,0,255), 1)  
+            chng = 1
+            print 'changed'
+
 
 #: Open Video file
 cameraCapture = cv2.VideoCapture('/home/mahdi/Desktop/train_videos/chamraan.avi')
@@ -61,20 +50,20 @@ skip = int(raw_input('skip frame(if not type 0 and press ENTER.)? '))
 
 #: Reading first two frames
 success, frame = cameraCapture.read()
-success, frame = cameraCapture.read()
 frame_num = 0
 
 with open('../ant_file_3.csv','a') as ant_file:
     cswriter = csv.writer(ant_file, delimiter=',')
 
     while success:
+        success, frame = cameraCapture.read()
         frame_num += 1
         if frame_num <= skip:
             continue
 
         cv2.putText(frame,
                     str(frame_num),
-                    (25, 25),
+                    (30, 30),
                     cv2.FONT_HERSHEY_PLAIN,
                     2.0,
                     (0, 0, 255),
@@ -91,29 +80,27 @@ with open('../ant_file_3.csv','a') as ant_file:
                     0
                 )
 
-        cv2.imshow('MyWindow', frame)
-        cv2.setMouseCallback('MyWindow', onMouse)
+        cv2.imshow('window', frame)
+        cv2.setMouseCallback('window', onMouse)
 
         while True:
-            temp = img.copy()
+            temp = frame.copy()
             cv2.rectangle(temp, (slc['x'],slc['y']), (slc['x']+slc['w'],slc['y']+slc['h']), (0,255,0), 2)
-            if chng == 1 and type(takh) is not str:
+            if chng == 1:
                 print 'bayad beneviseh!'
-                chng = 2
-                data_row = [f, takh, slc['x'], slc['y'], slc['x']+slc['w'], slc['y']+slc['h']]
-            elif chng == 3:
-                data_row.extend([slc['x'], slc['y'], slc['x']+slc['w'], slc['y']+slc['h']])
-                cswriter.writerow(data_row)
                 chng = 0
-            cv2.imshow('MyWindow', temp)
-            cv2.waitKey(1)
-            
-            if takh == 'f':
-                takh = -1
+                data_row = [frame_num, slc['x'], slc['y'], slc['x']+slc['w'], slc['y']+slc['h']]
+                cswriter.writerow(data_row)
+
+            cv2.imshow('window', temp)
+
+            if cv2.waitKey(1) == 'f':
+                print 'f'
                 break
-            elif takh == 'e':
+            elif cv2.waitKey(1) == 'e':
+                print 'e'
                 ant_file.close()
-                cv2.destroyWindow('MyWindow')
+                cv2.destroyWindow('window')
                 break
-        if takh == 'e':
+        if cv2.waitKey(1) == 'e':
             break
