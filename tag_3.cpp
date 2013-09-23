@@ -91,7 +91,7 @@ int main(int argc, char** argv)
         {
 
 			frame.copyTo(temp);
-			if( drawing_selection || true )
+			if( drawing_selection /*|| true*/ )
 				draw_selection(temp, selection);
 
 			if (k == 1)
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
 
 			if( waitKey( 1 ) == 'f' )
 			{
-				std::cout << framenum << endl;
+				std::cout << "New Frame: " << framenum << endl;
 				break;
 			}
 			
