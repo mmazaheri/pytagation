@@ -1,7 +1,7 @@
 import csv
 import cv2
 
-cameraCapture = cv2.VideoCapture('/home/mahdi/Desktop/train_videos/chamraan.avi')
+cameraCapture = cv2.VideoCapture('/home/mahdi/Desktop/seshanbeh/test1_ali.avi')
 cv2.namedWindow('MyWindow')
 
 print 'IMPORTANT: Type \'e\' and press ENTER when you want to quit!'
@@ -15,12 +15,13 @@ success, frame = cameraCapture.read()
 temp_flow = 0
 frame_num = 0
 
-with open('some.csv', 'a') as f:
+with open('../some.csv', 'a') as f:
     writer = csv.writer(f)
 
     while success:
         frame_num += 1
         if frame_num <= skip:
+            success, frame = cameraCapture.read()
             continue
         cv2.putText(frame, str(frame_num), (25, 25),
                 cv2.FONT_HERSHEY_PLAIN, 2.0, (0, 0, 255),

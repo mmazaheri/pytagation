@@ -11,6 +11,7 @@ img = 0
 chng = 0
 takh = 0
 data_row = []
+
 def onMouse(event, x, y, flags, param):
     global img, rect, drawing_slc, takh, slc, chng
 
@@ -51,18 +52,48 @@ def onMouse(event, x, y, flags, param):
             cv2.rectangle(img, (slc['x'],slc['y']), (slc['x']+slc['w'],slc['y']+slc['h']), (255,0,0), 1)
             chng = 3
 
+#: Open Video file
+cameraCapture = cv2.VideoCapture('/home/mahdi/Desktop/train_videos/chamraan.avi')
+points = raw_input('Please Enter line points(x1 y1 x2 y2, i.e. 12 32  43 54): ')
+points = [int(i) for i in points.split()]
 
+skip = int(raw_input('skip frame(if not type 0 and press ENTER.)? '))
 
-mypath = '/home/mahdi/Desktop/Vision Sources/test_imgs'#raw_input('Please type the image folder address: ')
-images_addr = [ f for f in listdir(mypath) if isfile(join(mypath,f))]
+#: Reading first two frames
+success, frame = cameraCapture.read()
+success, frame = cameraCapture.read()
+frame_num = 0
 
-with open('ant_file_2.csv','a') as ant_file:
+with open('../ant_file_3.csv','a') as ant_file:
     cswriter = csv.writer(ant_file, delimiter=',')
-    for f in images_addr:
-        img = cv2.imread(join(mypath,f))
-        temp = img.copy()
-        cv2.imshow('MyWindow', img)
-        cv2.setMouseCallback('MyWindow', onMouse)    
+
+    while success:
+        frame_num += 1
+        if frame_num <= skip:
+            continue
+
+        cv2.putText(frame,
+                    str(frame_num),
+                    (25, 25),
+                    cv2.FONT_HERSHEY_PLAIN,
+                    2.0,
+                    (0, 0, 255),
+                    thickness=2,
+                    lineType=cv2.CV_AA
+                    )
+
+        cv2.line(   frame,
+                    (points[0], points[1]),
+                    (points[2], points[3]),
+                    (0,255,0),
+                    1,
+                    cv2.CV_AA,
+                    0
+                )
+
+        cv2.imshow('MyWindow', frame)
+        cv2.setMouseCallback('MyWindow', onMouse)
+
         while True:
             temp = img.copy()
             cv2.rectangle(temp, (slc['x'],slc['y']), (slc['x']+slc['w'],slc['y']+slc['h']), (0,255,0), 2)
@@ -86,4 +117,3 @@ with open('ant_file_2.csv','a') as ant_file:
                 break
         if takh == 'e':
             break
-
