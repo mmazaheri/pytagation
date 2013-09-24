@@ -20,6 +20,7 @@ if __name__ == '__main__':
     # print g_x1
 
     c_frame, c_x1, c_y1, c_x2, c_y2 = np.loadtxt(   candidate,
+                                                    dtype='i8',
                                                     delimiter=',',
                                                     unpack=True,
                                                     usecols=(0,1,2,3,4),
@@ -59,5 +60,6 @@ if __name__ == '__main__':
 
         ovMax[thresh_ind, 1] = tp / (fp + tp)
         ovMax[thresh_ind, 2] = tp / np.size(g_frame)
+    candidate = candidate.split('/')[-1]
     s_tmp = candidate.split('.')
-    np.savetxt(s_tmp[0]+'_evals'+s_tmp[1], ovMax, fmt='%1.2f,%i,%i', delimiter=',')
+    np.savetxt(s_tmp[-2]+'_evals.'+s_tmp[-1], ovMax, fmt='%1.2f,%1.3f,%1.3f', delimiter=',')
